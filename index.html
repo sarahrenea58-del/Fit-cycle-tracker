@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Lift + Fuel v5</title>
+<style>
+:root{
+  --bg:#0b1020; --bg2:#131a2e; --panel:#151e34; --panel2:#1a2540; --line:#2f3b61;
+  --text:#eef2ff; --muted:#aeb8d7; --accent:#8b5cf6; --accent2:#22c55e; --accent3:#38bdf8; --accent4:#f59e0b; --danger:#ef4444;
+  --shadow:0 18px 40px rgba(0,0,0,.28); --radius:22px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,var(--bg),#10172a 24%, #0c1120);color:var(--text);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.app{max-width:1200px;margin:0 auto;padding:18px 16px 110px}
+.hero{padding:10px 2px 18px}
+h1,h2,h3{margin:0 0 8px}
+h1{font-size:30px;letter-spacing:.2px}
+h2{font-size:18px}
+h3{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.subtitle{color:var(--muted);max-width:760px}
+.grid{display:grid;gap:14px}
+.cards{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.two{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.three{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.panel.soft{background:linear-gradient(180deg,rgba(139,92,246,.18),rgba(139,92,246,.06))}
+.panel.green{background:linear-gradient(180deg,rgba(34,197,94,.14),rgba(34,197,94,.05))}
+.panel.blue{background:linear-gradient(180deg,rgba(56,189,248,.16),rgba(56,189,248,.05))}
+.panel.amber{background:linear-gradient(180deg,rgba(245,158,11,.16),rgba(245,158,11,.05))}
+.panel.red{background:linear-gradient(180deg,rgba(239,68,68,.16),rgba(239,68,68,.05))}
+.small{font-size:12px;color:var(--muted)}
+.stat{font-size:30px;font-weight:800}
+.kpi{font-size:24px;font-weight:800}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.stack{display:grid;gap:12px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.list{display:grid;gap:10px}
+.item{padding:12px;border-radius:16px;border:1px solid var(--line);background:#10182d}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#121c34;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+.badge{font-size:11px;padding:4px 8px;border-radius:999px;background:#16223e;border:1px solid var(--line);color:#d6ddf5}
+.good{color:#86efac} .warn{color:#fcd34d} .bad{color:#fca5a5}
+.progress{height:12px;border-radius:999px;background:#0d1425;border:1px solid var(--line);overflow:hidden}
+.bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.bar.carb{background:linear-gradient(90deg,#60a5fa,#06b6d4)}
+.bar.fat{background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.bar.cal{background:linear-gradient(90deg,#818cf8,#a78bfa)}
+button,input,select,textarea{font:inherit}
+input,select,textarea{width:100%;padding:12px 13px;border-radius:14px;border:1px solid var(--line);background:#0f1629;color:var(--text);outline:none}
+textarea{min-height:94px;resize:vertical}
+button{border:none;border-radius:14px;padding:12px 14px;background:linear-gradient(180deg,#8b5cf6,#6d4de3);color:#fff;font-weight:700;cursor:pointer}
+button.secondary{background:#121b31;border:1px solid var(--line)}
+button.green{background:linear-gradient(180deg,#22c55e,#16a34a)}
+button.amber{background:linear-gradient(180deg,#f59e0b,#d97706)}
+button.ghost{background:transparent;border:1px solid var(--line)}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+canvas{width:100%;height:220px;background:#0f1629;border:1px solid var(--line);border-radius:16px}
+.heroActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.tabs{position:sticky;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(8,1fr);gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));background:rgba(10,14,24,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.tab{border:1px solid var(--line);background:#121b31;color:var(--muted);padding:10px 8px;border-radius:16px;text-align:center;font-size:12px;cursor:pointer}
+.tab.active{background:linear-gradient(180deg,rgba(139,92,246,.28),rgba(139,92,246,.10));color:var(--text);border-color:#6d4de3}
+.view{display:none} .view.active{display:block}
+.sectionTitle{margin:18px 2px 10px;color:#d8def2;font-weight:700}
+.hint{padding:10px 12px;border-radius:14px;background:#10182d;border:1px dashed #334155;color:var(--muted)}
+.miniGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+@media (max-width:760px){ .tabs{grid-template-columns:repeat(4,1fr)} }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <div class="between">
+      <div>
+        <h1>Lift + Fuel v5</h1>
+        <div class="subtitle">Adaptive training and nutrition coaching with macros, food search, recipes, cycle-aware readiness, strength analytics, weight and measurement trends, and weekly summaries.</div>
+      </div>
+      <span class="pill" id="liveStatus">Ready to build momentum</span>
+    </div>
+    <div class="heroActions">
+      <button class="secondary" id="loadDemoBtn">Load sample data</button>
+      <button class="secondary" id="exportBtn">Export</button>
+      <button class="secondary" id="importBtn">Import</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none"/>
+    </div>
+  </div>
+
+  <div id="dashboard" class="view active">
+    <div class="grid cards">
+      <div class="panel soft">
+        <div class="small">Readiness score</div>
+        <div class="stat" id="readinessScore">--</div>
+        <div class="small" id="readinessText">Log a few days to personalize this.</div>
+      </div>
+      <div class="panel blue">
+        <div class="small">Fatigue status</div>
+        <div class="stat" id="fatigueStatus">--</div>
+        <div class="small" id="fatigueText">Sleep and volume trends will show here.</div>
+      </div>
+      <div class="panel green">
+        <div class="small">Today's phase</div>
+        <div class="stat" id="phaseLabel">--</div>
+        <div class="small" id="phaseTip">Cycle-aware recommendations will appear here.</div>
+      </div>
+      <div class="panel amber">
+        <div class="small">Auto calories</div>
+        <div class="stat"><span id="calTargetTop">--</span></div>
+        <div class="small" id="calorieAdjustmentText">Weight trend adjustments will appear here.</div>
+      </div>
+    </div>
+
+    <div class="sectionTitle">Today</div>
+    <div class="grid two">
+      <div class="panel">
+        <div class="between"><h2>Macro progress</h2><span class="pill" id="dayTypeChip">Rest day</span></div>
+        <div class="stack">
+          <div><div class="between"><span>Protein</span><span id="proteinProgressText">0 / 0 g</span></div><div class="progress"><div class="bar" id="proteinBar"></div></div></div>
+          <div><div class="between"><span>Carbs</span><span id="carbProgressText">0 / 0 g</span></div><div class="progress"><div class="bar carb" id="carbBar"></div></div></div>
+          <div><div class="between"><span>Fat</span><span id="fatProgressText">0 / 0 g</span></div><div class="progress"><div class="bar fat" id="fatBar"></div></div></div>
+          <div><div class="between"><span>Calories</span><span id="calProgressText">0 / 0 kcal</span></div><div class="progress"><div class="bar cal" id="calBar"></div></div></div>
+        </div>
+        <div class="hint" style="margin-top:12px" id="macroNote">Your targets update based on training day, cycle phase, and weight trend.</div>
+      </div>
+      <div class="panel">
+        <h2>Smart coaching</h2>
+        <div class="list" id="coachingList"></div>
+      </div>
+    </div>
+
+    <div class="sectionTitle">Trends</div>
+    <div class="grid two">
+      <div class="panel"><div class="between"><h2>7-day protein</h2><span class="small">g/day</span></div><canvas id="proteinChart" width="400" height="220"></canvas></div>
+      <div class="panel"><div class="between"><h2>7-day training volume</h2><span class="small">lb-reps</span></div><canvas id="volumeChart" width="400" height="220"></canvas></div>
+      <div class="panel"><div class="between"><h2>Body weight trend</h2><span class="small">lb</span></div><canvas id="weightChart" width="400" height="220"></canvas></div>
+      <div class="panel"><div class="between"><h2>Sleep trend</h2><span class="small">hours</span></div><canvas id="sleepChart" width="400" height="220"></canvas></div>
+    </div>
+  </div>
+
+  <div id="profile" class="view">
+    <div class="grid two">
+      <div class="panel">
+        <h2>Profile and goals</h2>
+        <div class="cols">
+          <div><label>Weight (lb)</label><input id="weight" type="number" step="0.1"></div>
+          <div><label>Height (in)</label><input id="height" type="number" step="0.1"></div>
+          <div><label>Age</label><input id="age" type="number" step="1"></div>
+          <div><label>Activity</label><select id="activity"><option value="light">Lightly active</option><option value="moderate">Moderately active</option><option value="active">Active</option></select></div>
+          <div><label>Lifting days/week</label><select id="liftDays"><option>3</option><option selected>4</option><option>5</option><option>6</option></select></div>
+          <div><label>Goal</label><select id="goal"><option value="recomp">Recomposition</option><option value="lose">Fat loss</option><option value="gain">Muscle gain</option></select></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button id="saveProfileBtn">Save profile</button><button class="secondary" id="recalcBtn">Recalculate</button></div>
+      </div>
+      <div class="panel">
+        <h2>Automatic targets</h2>
+        <div class="list" id="targetCards"></div>
+        <div class="hint">The app uses your 4-day lifting schedule, training day flags, cycle phase, and weight trend to adjust your daily calories and carb targets.</div>
+      </div>
+    </div>
+
+    <div class="sectionTitle">Cycle settings</div>
+    <div class="grid two">
+      <div class="panel">
+        <div class="cols">
+          <div><label>Last period start</label><input id="periodStart" type="date"></div>
+          <div><label>Cycle length (days)</label><input id="cycleLength" type="number" min="21" max="40"></div>
+          <div><label>Period length (days)</label><input id="periodLength" type="number" min="2" max="10"></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button id="saveCycleBtn">Save cycle settings</button></div>
+      </div>
+      <div class="panel">
+        <h2>Apple Health</h2>
+        <div class="hint">Direct Apple Health sync is still the one feature that cannot run inside GitHub Pages. True sleep and activity import requires a native iPhone app using HealthKit.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="food" class="view">
+    <div class="grid two">
+      <div class="panel">
+        <div class="between"><h2>Extensive food library</h2><span class="pill" id="foodLibraryCount">0 foods</span></div>
+        <div class="cols">
+          <div style="grid-column:1 / -1"><label>Search food</label><input id="foodSearch" placeholder="Search Greek yogurt, oats, chicken, sushi, chipotle, avocado..."></div>
+          <div><label>Category</label><select id="foodCategory"></select></div>
+        </div>
+        <div class="list" id="foodSearchResults" style="margin-top:12px"></div>
+      </div>
+      <div class="panel">
+        <h2>Log food</h2>
+        <div class="cols">
+          <div><label>Date</label><input id="foodDate" type="date"></div>
+          <div><label>Food name</label><input id="foodName"></div>
+          <div><label>Calories</label><input id="foodCalories" type="number"></div>
+          <div><label>Protein (g)</label><input id="foodProtein" type="number" step="0.1"></div>
+          <div><label>Carbs (g)</label><input id="foodCarbs" type="number" step="0.1"></div>
+          <div><label>Fat (g)</label><input id="foodFat" type="number" step="0.1"></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button id="addFoodBtn">Add food</button><button class="secondary" id="saveCustomFoodBtn">Save as custom food</button></div>
+        <div class="sectionTitle">Food log for selected date</div>
+        <div class="list" id="foodLogList"></div>
+      </div>
+    </div>
+
+    <div class="sectionTitle">Recipes</div>
+    <div class="grid two">
+      <div class="panel">
+        <h2>Create recipe</h2>
+        <div class="cols">
+          <div style="grid-column:1 / -1"><label>Recipe name</label><input id="recipeName" placeholder="Turkey taco bowl"></div>
+          <div><label>Servings</label><input id="recipeServings" type="number" value="1" min="1"></div>
+          <div style="grid-column:1 / -1"><label>Ingredient search</label><input id="recipeSearch" placeholder="Search ingredients to add"></div>
+        </div>
+        <div class="list" id="recipeSearchResults" style="margin-top:12px"></div>
+        <div class="sectionTitle">Recipe ingredients</div>
+        <div class="list" id="recipeIngredients"></div>
+        <div class="row" style="margin-top:12px"><button id="saveRecipeBtn">Save recipe</button></div>
+      </div>
+      <div class="panel">
+        <h2>Saved recipes</h2>
+        <div class="list" id="savedRecipes"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="workouts" class="view">
+    <div class="grid two">
+      <div class="panel">
+        <h2>Log workout</h2>
+        <div class="cols">
+          <div><label>Date</label><input id="workoutDate" type="date"></div>
+          <div><label>Exercise</label><input id="exerciseName" placeholder="Barbell squat"></div>
+          <div><label>Weight</label><input id="exerciseWeight" type="number" step="0.5"></div>
+          <div><label>Reps</label><input id="exerciseReps" type="number"></div>
+          <div><label>Sets</label><input id="exerciseSets" type="number"></div>
+          <div><label>Rest timer (sec)</label><input id="timerSeconds" type="number" value="90"></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button id="addWorkoutBtn">Add set</button><button class="secondary" id="startTimerBtn">Start timer</button><span class="pill" id="timerDisplay">01:30</span></div>
+        <div class="sectionTitle">Workout log for selected date</div>
+        <div class="list" id="workoutLogList"></div>
+      </div>
+      <div class="panel">
+        <h2>Performance insights</h2>
+        <div class="list" id="prList"></div>
+        <div class="sectionTitle">Progressive overload suggestions</div>
+        <div class="list" id="overloadList"></div>
+        <div class="sectionTitle">Predicted PR timeline</div>
+        <div class="list" id="predictionList"></div>
+      </div>
+    </div>
+
+    <div class="sectionTitle">Strength charts</div>
+    <div class="grid two">
+      <div class="panel">
+        <div class="between"><h2>Estimated 1RM over time</h2><select id="exerciseChartSelect"></select></div>
+        <canvas id="strengthChart" width="400" height="220"></canvas>
+      </div>
+      <div class="panel">
+        <div class="between"><h2>Measurements</h2><span class="small">waist vs hips</span></div>
+        <canvas id="measurementChart" width="400" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div id="recovery" class="view">
+    <div class="grid two">
+      <div class="panel">
+        <h2>Sleep log</h2>
+        <div class="cols">
+          <div><label>Date</label><input id="sleepDate" type="date"></div>
+          <div><label>Hours slept</label><input id="sleepHours" type="number" step="0.1"></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button id="addSleepBtn">Save sleep</button></div>
+        <div class="sectionTitle">Recent sleep</div>
+        <div class="list" id="sleepLogList"></div>
+      </div>
+      <div class="panel">
+        <h2>Body weight and measurements</h2>
+        <div class="cols">
+          <div><label>Date</label><input id="trendDate" type="date"></div>
+          <div><label>Weight (lb)</label><input id="trendWeight" type="number" step="0.1"></div>
+          <div><label>Waist (in)</label><input id="trendWaist" type="number" step="0.1"></div>
+          <div><label>Hips (in)</label><input id="trendHips" type="number" step="0.1"></div>
+        </div>
+        <div class="row" style="margin-top:12px"><button id="addTrendBtn">Save measurement</button></div>
+        <div class="sectionTitle">Body composition insights</div>
+        <div class="list" id="measurementInsights"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cycle" class="view">
+    <div class="grid two">
+      <div class="panel">
+        <h2>Cycle-aware recommendations</h2>
+        <div class="list" id="cycleRecList"></div>
+      </div>
+      <div class="panel">
+        <h2>Performance across cycle phases</h2>
+        <div class="list" id="cyclePerfList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="summary" class="view">
+    <div class="grid two">
+      <div class="panel">
+        <h2>Weekly summary</h2>
+        <div class="list" id="weeklySummaryList"></div>
+      </div>
+      <div class="panel">
+        <h2>Encouragement</h2>
+        <div class="list" id="encouragementList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-view="dashboard">Dashboard</div>
+  <div class="tab" data-view="profile">Profile</div>
+  <div class="tab" data-view="food">Food</div>
+  <div class="tab" data-view="workouts">Workouts</div>
+  <div class="tab" data-view="recovery">Recovery</div>
+  <div class="tab" data-view="cycle">Cycle</div>
+  <div class="tab" data-view="summary">Summary</div>
+  <div class="tab" data-view="dashboard">Home</div>
+</div>
+
+<script>
+const STORAGE_KEY = 'liftFuelV5';
+const todayStr = () => new Date().toISOString().slice(0,10);
+const fmtNum = n => (Math.round((+n||0)*10)/10).toString();
+const clamp = (v,min,max) => Math.max(min, Math.min(max, v));
+const uniqId = () => Math.random().toString(36).slice(2,10);
+const startOfDay = d => new Date(d + 'T00:00:00');
+const diffDays = (a,b) => Math.floor((startOfDay(a)-startOfDay(b))/86400000);
+const average = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+const median = arr => { const x=[...arr].sort((a,b)=>a-b); if(!x.length) return 0; const m=Math.floor(x.length/2); return x.length%2?x[m]:(x[m-1]+x[m])/2; };
+const formatDateShort = d => new Date(d+'T00:00:00').toLocaleDateString(undefined, {month:'short',day:'numeric'});
+const sum = arr => arr.reduce((a,b)=>a+b,0);
+
+const defaultData = {
+  profile: {weight:140,height:65,age:30,activity:'moderate',liftDays:4,goal:'recomp'},
+  cycle: {periodStart:todayStr(),cycleLength:28,periodLength:5},
+  foodLog: [], workouts: [], sleepLog: [], trends: [], recipes: [], customFoods: []
+};
+const baseFoodLibrary = [{"name": "Greek yogurt, plain nonfat, 1 cup", "calories": 100, "protein": 17, "carbs": 6, "fat": 0, "category": "Protein"}, {"name": "Greek yogurt, 2%, 1 cup", "calories": 150, "protein": 20, "carbs": 6, "fat": 4, "category": "Protein"}, {"name": "Greek yogurt, 5%, 1 cup", "calories": 190, "protein": 18, "carbs": 7, "fat": 10, "category": "Protein"}, {"name": "Cottage cheese, low-fat, 1 cup", "calories": 180, "protein": 24, "carbs": 8, "fat": 5, "category": "Protein"}, {"name": "Cottage cheese, 4%, 1 cup", "calories": 220, "protein": 25, "carbs": 8, "fat": 10, "category": "Protein"}, {"name": "Fairlife milk, 1 cup", "calories": 140, "protein": 13, "carbs": 6, "fat": 6, "category": "Protein"}, {"name": "Milk, skim, 1 cup", "calories": 83, "protein": 8, "carbs": 12, "fat": 0, "category": "Protein"}, {"name": "Milk, 2%, 1 cup", "calories": 122, "protein": 8, "carbs": 12, "fat": 5, "category": "Protein"}, {"name": "Egg, large", "calories": 70, "protein": 6, "carbs": 0.5, "fat": 5, "category": "Protein"}, {"name": "Egg whites, 1/2 cup", "calories": 60, "protein": 13, "carbs": 1, "fat": 0, "category": "Protein"}, {"name": "Chicken breast, cooked, 4 oz", "calories": 187, "protein": 35, "carbs": 0, "fat": 4, "category": "Protein"}, {"name": "Chicken thigh, cooked, 4 oz", "calories": 229, "protein": 25, "carbs": 0, "fat": 13, "category": "Protein"}, {"name": "Rotisserie chicken, 4 oz", "calories": 200, "protein": 30, "carbs": 0, "fat": 9, "category": "Protein"}, {"name": "Turkey breast deli meat, 4 oz", "calories": 120, "protein": 24, "carbs": 4, "fat": 2, "category": "Protein"}, {"name": "Ground turkey 93%, 4 oz", "calories": 170, "protein": 22, "carbs": 0, "fat": 9, "category": "Protein"}, {"name": "Ground beef 93%, 4 oz", "calories": 170, "protein": 24, "carbs": 0, "fat": 8, "category": "Protein"}, {"name": "Lean steak, sirloin, 4 oz", "calories": 200, "protein": 29, "carbs": 0, "fat": 8, "category": "Protein"}, {"name": "Pork tenderloin, 4 oz", "calories": 160, "protein": 26, "carbs": 0, "fat": 4, "category": "Protein"}, {"name": "Ham, lean, 4 oz", "calories": 150, "protein": 22, "carbs": 2, "fat": 6, "category": "Protein"}, {"name": "Tuna in water, 1 can", "calories": 120, "protein": 26, "carbs": 0, "fat": 1, "category": "Protein"}, {"name": "Salmon, cooked, 4 oz", "calories": 233, "protein": 25, "carbs": 0, "fat": 14, "category": "Protein"}, {"name": "Shrimp, cooked, 4 oz", "calories": 120, "protein": 23, "carbs": 1, "fat": 1, "category": "Protein"}, {"name": "Tofu, firm, 4 oz", "calories": 110, "protein": 12, "carbs": 3, "fat": 6, "category": "Protein"}, {"name": "Tempeh, 4 oz", "calories": 190, "protein": 18, "carbs": 12, "fat": 10, "category": "Protein"}, {"name": "Edamame, 1 cup", "calories": 188, "protein": 18, "carbs": 14, "fat": 8, "category": "Protein"}, {"name": "Black beans, 1 cup", "calories": 227, "protein": 15, "carbs": 41, "fat": 1, "category": "Protein"}, {"name": "Kidney beans, 1 cup", "calories": 225, "protein": 15, "carbs": 40, "fat": 1, "category": "Protein"}, {"name": "Chickpeas, 1 cup", "calories": 269, "protein": 14, "carbs": 45, "fat": 4, "category": "Protein"}, {"name": "Lentils, 1 cup", "calories": 230, "protein": 18, "carbs": 40, "fat": 1, "category": "Protein"}, {"name": "Protein powder scoop", "calories": 130, "protein": 25, "carbs": 3, "fat": 2, "category": "Protein"}, {"name": "Protein bar", "calories": 200, "protein": 20, "carbs": 22, "fat": 7, "category": "Protein"}, {"name": "String cheese", "calories": 80, "protein": 7, "carbs": 1, "fat": 6, "category": "Protein"}, {"name": "Mozzarella, part skim, 1 oz", "calories": 72, "protein": 7, "carbs": 1, "fat": 4, "category": "Protein"}, {"name": "Cheddar cheese, 1 oz", "calories": 115, "protein": 7, "carbs": 1, "fat": 9, "category": "Protein"}, {"name": "Turkey sausage, 2 links", "calories": 130, "protein": 12, "carbs": 2, "fat": 8, "category": "Protein"}, {"name": "Chicken sausage, 1 link", "calories": 140, "protein": 14, "carbs": 2, "fat": 9, "category": "Protein"}, {"name": "Canadian bacon, 3 slices", "calories": 60, "protein": 10, "carbs": 1, "fat": 2, "category": "Protein"}, {"name": "Seitan, 3 oz", "calories": 110, "protein": 21, "carbs": 4, "fat": 1, "category": "Protein"}, {"name": "Oats, 1/2 cup dry", "calories": 150, "protein": 5, "carbs": 27, "fat": 3, "category": "Carb"}, {"name": "Old-fashioned oats, 1 cup cooked", "calories": 154, "protein": 5, "carbs": 27, "fat": 3, "category": "Carb"}, {"name": "Microwave rice, 1 cup", "calories": 210, "protein": 4, "carbs": 45, "fat": 1, "category": "Carb"}, {"name": "White rice, cooked, 1 cup", "calories": 205, "protein": 4, "carbs": 45, "fat": 0, "category": "Carb"}, {"name": "Brown rice, cooked, 1 cup", "calories": 216, "protein": 5, "carbs": 45, "fat": 2, "category": "Carb"}, {"name": "Jasmine rice, cooked, 1 cup", "calories": 205, "protein": 4, "carbs": 45, "fat": 0, "category": "Carb"}, {"name": "Quinoa, cooked, 1 cup", "calories": 222, "protein": 8, "carbs": 39, "fat": 4, "category": "Carb"}, {"name": "Pasta, cooked, 1 cup", "calories": 220, "protein": 8, "carbs": 43, "fat": 1, "category": "Carb"}, {"name": "Whole wheat pasta, cooked, 1 cup", "calories": 174, "protein": 7, "carbs": 37, "fat": 1, "category": "Carb"}, {"name": "Sourdough bread, 2 slices", "calories": 180, "protein": 6, "carbs": 36, "fat": 2, "category": "Carb"}, {"name": "Whole wheat bread, 2 slices", "calories": 180, "protein": 8, "carbs": 32, "fat": 2, "category": "Carb"}, {"name": "English muffin", "calories": 130, "protein": 5, "carbs": 26, "fat": 1, "category": "Carb"}, {"name": "Bagel, plain", "calories": 270, "protein": 10, "carbs": 53, "fat": 1, "category": "Carb"}, {"name": "Whole wheat wrap", "calories": 130, "protein": 5, "carbs": 22, "fat": 3.5, "category": "Carb"}, {"name": "Corn tortillas, 2", "calories": 110, "protein": 3, "carbs": 22, "fat": 1, "category": "Carb"}, {"name": "Flour tortillas, medium, 2", "calories": 220, "protein": 6, "carbs": 36, "fat": 6, "category": "Carb"}, {"name": "Potato, medium", "calories": 161, "protein": 4, "carbs": 37, "fat": 0.2, "category": "Carb"}, {"name": "Sweet potato, medium", "calories": 112, "protein": 2, "carbs": 26, "fat": 0.1, "category": "Carb"}, {"name": "Russet potato, baked, large", "calories": 278, "protein": 7, "carbs": 63, "fat": 0.4, "category": "Carb"}, {"name": "Mashed potatoes, 1 cup", "calories": 210, "protein": 4, "carbs": 35, "fat": 8, "category": "Carb"}, {"name": "Rice cakes, 2", "calories": 70, "protein": 1, "carbs": 14, "fat": 0, "category": "Carb"}, {"name": "Granola, 1/4 cup", "calories": 130, "protein": 3, "carbs": 20, "fat": 4, "category": "Carb"}, {"name": "Granola, 1/2 cup", "calories": 260, "protein": 6, "carbs": 40, "fat": 8, "category": "Carb"}, {"name": "Cheerios, 1 cup", "calories": 100, "protein": 3, "carbs": 20, "fat": 2, "category": "Carb"}, {"name": "Rice Krispies, 1.5 cups", "calories": 150, "protein": 3, "carbs": 34, "fat": 0, "category": "Carb"}, {"name": "Cereal, high protein, 1 serving", "calories": 180, "protein": 13, "carbs": 26, "fat": 3, "category": "Carb"}, {"name": "Popcorn, air-popped, 3 cups", "calories": 95, "protein": 3, "carbs": 19, "fat": 1, "category": "Carb"}, {"name": "Pretzels, 1 oz", "calories": 110, "protein": 2, "carbs": 23, "fat": 1, "category": "Carb"}, {"name": "Crackers, whole grain, 1 oz", "calories": 120, "protein": 3, "carbs": 20, "fat": 3, "category": "Carb"}, {"name": "Pancakes, 2 medium", "calories": 180, "protein": 5, "carbs": 30, "fat": 4, "category": "Carb"}, {"name": "Waffle, 2", "calories": 180, "protein": 5, "carbs": 30, "fat": 5, "category": "Carb"}, {"name": "Pizza crust, personal", "calories": 270, "protein": 8, "carbs": 52, "fat": 4, "category": "Carb"}, {"name": "Mac and cheese, 1 cup", "calories": 300, "protein": 12, "carbs": 33, "fat": 13, "category": "Carb"}, {"name": "Couscous, cooked, 1 cup", "calories": 176, "protein": 6, "carbs": 36, "fat": 0, "category": "Carb"}, {"name": "Farro, cooked, 1 cup", "calories": 200, "protein": 7, "carbs": 37, "fat": 1.5, "category": "Carb"}, {"name": "Barley, cooked, 1 cup", "calories": 193, "protein": 4, "carbs": 44, "fat": 1, "category": "Carb"}, {"name": "Ramen noodles, cooked packet", "calories": 380, "protein": 9, "carbs": 54, "fat": 14, "category": "Carb"}, {"name": "Pho noodles, 1 cup", "calories": 190, "protein": 3, "carbs": 43, "fat": 0, "category": "Carb"}, {"name": "Banana, medium", "calories": 105, "protein": 1, "carbs": 27, "fat": 0, "category": "Produce"}, {"name": "Apple, medium", "calories": 95, "protein": 0.5, "carbs": 25, "fat": 0.3, "category": "Produce"}, {"name": "Orange, medium", "calories": 62, "protein": 1, "carbs": 15, "fat": 0, "category": "Produce"}, {"name": "Blueberries, 1 cup", "calories": 85, "protein": 1, "carbs": 21, "fat": 0.5, "category": "Produce"}, {"name": "Strawberries, 1 cup", "calories": 49, "protein": 1, "carbs": 12, "fat": 0.5, "category": "Produce"}, {"name": "Raspberries, 1 cup", "calories": 65, "protein": 1.5, "carbs": 15, "fat": 0.8, "category": "Produce"}, {"name": "Grapes, 1 cup", "calories": 104, "protein": 1, "carbs": 27, "fat": 0.2, "category": "Produce"}, {"name": "Pineapple, 1 cup", "calories": 83, "protein": 1, "carbs": 22, "fat": 0, "category": "Produce"}, {"name": "Mango, 1 cup", "calories": 99, "protein": 1, "carbs": 25, "fat": 0.6, "category": "Produce"}, {"name": "Watermelon, 2 cups", "calories": 90, "protein": 2, "carbs": 23, "fat": 0, "category": "Produce"}, {"name": "Kiwi, 2", "calories": 84, "protein": 1.6, "carbs": 20, "fat": 0.8, "category": "Produce"}, {"name": "Pear, medium", "calories": 101, "protein": 0.6, "carbs": 27, "fat": 0.2, "category": "Produce"}, {"name": "Avocado, 1/2", "calories": 120, "protein": 2, "carbs": 6, "fat": 11, "category": "Produce"}, {"name": "Spinach, 2 cups", "calories": 15, "protein": 2, "carbs": 2, "fat": 0, "category": "Produce"}, {"name": "Mixed greens, 2 cups", "calories": 18, "protein": 2, "carbs": 3, "fat": 0, "category": "Produce"}, {"name": "Broccoli, 1 cup", "calories": 31, "protein": 2.5, "carbs": 6, "fat": 0.3, "category": "Produce"}, {"name": "Green beans, 1 cup", "calories": 44, "protein": 2, "carbs": 10, "fat": 0.3, "category": "Produce"}, {"name": "Asparagus, 1 cup", "calories": 27, "protein": 3, "carbs": 5, "fat": 0.2, "category": "Produce"}, {"name": "Brussels sprouts, 1 cup", "calories": 56, "protein": 4, "carbs": 11, "fat": 0.8, "category": "Produce"}, {"name": "Cauliflower, 1 cup", "calories": 27, "protein": 2, "carbs": 5, "fat": 0.3, "category": "Produce"}, {"name": "Carrots, 1 cup", "calories": 52, "protein": 1, "carbs": 12, "fat": 0.3, "category": "Produce"}, {"name": "Bell peppers, 1 cup", "calories": 39, "protein": 1.5, "carbs": 9, "fat": 0.4, "category": "Produce"}, {"name": "Cucumber, 1 cup", "calories": 16, "protein": 0.8, "carbs": 4, "fat": 0.1, "category": "Produce"}, {"name": "Zucchini, 1 cup", "calories": 20, "protein": 1.5, "carbs": 4, "fat": 0.3, "category": "Produce"}, {"name": "Tomato, medium", "calories": 22, "protein": 1, "carbs": 5, "fat": 0.2, "category": "Produce"}, {"name": "Onion, 1/2 cup", "calories": 32, "protein": 1, "carbs": 7, "fat": 0.1, "category": "Produce"}, {"name": "Mushrooms, 1 cup", "calories": 15, "protein": 2, "carbs": 2, "fat": 0.2, "category": "Produce"}, {"name": "Corn, 1 cup", "calories": 132, "protein": 5, "carbs": 29, "fat": 2, "category": "Produce"}, {"name": "Peas, 1 cup", "calories": 134, "protein": 9, "carbs": 25, "fat": 0.4, "category": "Produce"}, {"name": "Salad kit serving", "calories": 150, "protein": 3, "carbs": 10, "fat": 10, "category": "Produce"}, {"name": "Almonds, 1 oz", "calories": 164, "protein": 6, "carbs": 6, "fat": 14, "category": "Fat"}, {"name": "Cashews, 1 oz", "calories": 157, "protein": 5, "carbs": 9, "fat": 12, "category": "Fat"}, {"name": "Walnuts, 1 oz", "calories": 185, "protein": 4, "carbs": 4, "fat": 18, "category": "Fat"}, {"name": "Peanut butter, 1 tbsp", "calories": 95, "protein": 4, "carbs": 3, "fat": 8, "category": "Fat"}, {"name": "Peanut butter, 2 tbsp", "calories": 190, "protein": 8, "carbs": 6, "fat": 16, "category": "Fat"}, {"name": "Almond butter, 1 tbsp", "calories": 98, "protein": 3.4, "carbs": 3, "fat": 9, "category": "Fat"}, {"name": "Chia seeds, 1 tbsp", "calories": 60, "protein": 2, "carbs": 5, "fat": 4, "category": "Fat"}, {"name": "Flaxseed, 1 tbsp", "calories": 55, "protein": 2, "carbs": 3, "fat": 4.5, "category": "Fat"}, {"name": "Olive oil, 1 tbsp", "calories": 119, "protein": 0, "carbs": 0, "fat": 14, "category": "Fat"}, {"name": "Butter, 1 tbsp", "calories": 102, "protein": 0, "carbs": 0, "fat": 12, "category": "Fat"}, {"name": "Ranch dressing, 2 tbsp", "calories": 130, "protein": 1, "carbs": 2, "fat": 14, "category": "Fat"}, {"name": "Vinaigrette, 2 tbsp", "calories": 100, "protein": 0, "carbs": 3, "fat": 10, "category": "Fat"}, {"name": "Mayonnaise, 1 tbsp", "calories": 90, "protein": 0, "carbs": 0, "fat": 10, "category": "Fat"}, {"name": "Hummus, 2 tbsp", "calories": 70, "protein": 2, "carbs": 5, "fat": 5, "category": "Fat"}, {"name": "Guacamole, 2 tbsp", "calories": 45, "protein": 1, "carbs": 3, "fat": 4, "category": "Fat"}, {"name": "Salsa, 1/4 cup", "calories": 18, "protein": 0.8, "carbs": 4, "fat": 0, "category": "Fat"}, {"name": "BBQ sauce, 2 tbsp", "calories": 60, "protein": 0, "carbs": 16, "fat": 0, "category": "Fat"}, {"name": "Teriyaki sauce, 2 tbsp", "calories": 35, "protein": 1, "carbs": 7, "fat": 0, "category": "Fat"}, {"name": "Honey, 1 tbsp", "calories": 64, "protein": 0, "carbs": 17, "fat": 0, "category": "Fat"}, {"name": "Jam, 1 tbsp", "calories": 50, "protein": 0, "carbs": 13, "fat": 0, "category": "Fat"}, {"name": "Maple syrup, 1 tbsp", "calories": 52, "protein": 0, "carbs": 13, "fat": 0, "category": "Fat"}, {"name": "Light sour cream, 2 tbsp", "calories": 40, "protein": 1, "carbs": 2, "fat": 3, "category": "Fat"}, {"name": "Pesto, 2 tbsp", "calories": 150, "protein": 2, "carbs": 2, "fat": 15, "category": "Fat"}, {"name": "Protein chips, bag", "calories": 140, "protein": 19, "carbs": 5, "fat": 4, "category": "Snack"}, {"name": "Beef jerky, 1 oz", "calories": 116, "protein": 9, "carbs": 3, "fat": 7, "category": "Snack"}, {"name": "Trail mix, 1 oz", "calories": 173, "protein": 5, "carbs": 16, "fat": 11, "category": "Snack"}, {"name": "Dark chocolate, 1 oz", "calories": 170, "protein": 2, "carbs": 13, "fat": 12, "category": "Snack"}, {"name": "Granola bar", "calories": 120, "protein": 2, "carbs": 18, "fat": 4, "category": "Snack"}, {"name": "Rice pudding, cup", "calories": 180, "protein": 4, "carbs": 34, "fat": 3, "category": "Snack"}, {"name": "Yogurt cup, light", "calories": 80, "protein": 12, "carbs": 7, "fat": 0, "category": "Snack"}, {"name": "Yogurt cup, regular", "calories": 150, "protein": 6, "carbs": 20, "fat": 4, "category": "Snack"}, {"name": "Chocolate milk, 1 cup", "calories": 190, "protein": 8, "carbs": 26, "fat": 5, "category": "Snack"}, {"name": "Orange juice, 8 oz", "calories": 112, "protein": 2, "carbs": 26, "fat": 0, "category": "Snack"}, {"name": "Sports drink, 20 oz", "calories": 130, "protein": 0, "carbs": 34, "fat": 0, "category": "Snack"}, {"name": "Electrolyte drink, zero", "calories": 10, "protein": 0, "carbs": 2, "fat": 0, "category": "Snack"}, {"name": "Coffee with creamer, medium", "calories": 60, "protein": 1, "carbs": 8, "fat": 2, "category": "Snack"}, {"name": "Latte, 12 oz", "calories": 150, "protein": 8, "carbs": 14, "fat": 6, "category": "Snack"}, {"name": "Cappuccino, 12 oz", "calories": 100, "protein": 6, "carbs": 10, "fat": 4, "category": "Snack"}, {"name": "Smoothie, fruit, 16 oz", "calories": 220, "protein": 4, "carbs": 50, "fat": 1, "category": "Snack"}, {"name": "Acai bowl, small", "calories": 350, "protein": 6, "carbs": 60, "fat": 11, "category": "Snack"}, {"name": "Frozen yogurt, 1/2 cup", "calories": 110, "protein": 3, "carbs": 23, "fat": 0.5, "category": "Snack"}, {"name": "Ice cream, 1/2 cup", "calories": 140, "protein": 2, "carbs": 16, "fat": 7, "category": "Snack"}, {"name": "Cookie, large", "calories": 210, "protein": 2, "carbs": 28, "fat": 10, "category": "Snack"}, {"name": "Chipotle chicken bowl, typical", "calories": 650, "protein": 42, "carbs": 63, "fat": 24, "category": "Restaurant"}, {"name": "Chipotle steak bowl, typical", "calories": 700, "protein": 40, "carbs": 64, "fat": 28, "category": "Restaurant"}, {"name": "Subway turkey 6-inch", "calories": 280, "protein": 18, "carbs": 46, "fat": 3, "category": "Restaurant"}, {"name": "Chick-fil-A grilled nuggets, 12 ct", "calories": 200, "protein": 38, "carbs": 3, "fat": 4, "category": "Restaurant"}, {"name": "Chick-fil-A fries, medium", "calories": 420, "protein": 5, "carbs": 45, "fat": 24, "category": "Restaurant"}, {"name": "Starbucks egg white bites", "calories": 170, "protein": 13, "carbs": 11, "fat": 7, "category": "Restaurant"}, {"name": "Starbucks bacon egg bites", "calories": 300, "protein": 19, "carbs": 9, "fat": 20, "category": "Restaurant"}, {"name": "Panera turkey sandwich, half", "calories": 340, "protein": 18, "carbs": 35, "fat": 14, "category": "Restaurant"}, {"name": "Panera mac and cheese, cup", "calories": 470, "protein": 17, "carbs": 40, "fat": 31, "category": "Restaurant"}, {"name": "McDonalds Egg McMuffin", "calories": 310, "protein": 17, "carbs": 30, "fat": 13, "category": "Restaurant"}, {"name": "McDonalds cheeseburger", "calories": 300, "protein": 15, "carbs": 33, "fat": 13, "category": "Restaurant"}, {"name": "Taco Bell chicken soft taco", "calories": 170, "protein": 12, "carbs": 15, "fat": 7, "category": "Restaurant"}, {"name": "Taco Bell burrito bowl, chicken", "calories": 470, "protein": 26, "carbs": 53, "fat": 17, "category": "Restaurant"}, {"name": "Sushi roll, California", "calories": 255, "protein": 9, "carbs": 38, "fat": 7, "category": "Restaurant"}, {"name": "Sushi roll, spicy tuna", "calories": 290, "protein": 13, "carbs": 28, "fat": 10, "category": "Restaurant"}, {"name": "Poke bowl, average", "calories": 550, "protein": 30, "carbs": 55, "fat": 22, "category": "Restaurant"}, {"name": "Greek salad with chicken", "calories": 430, "protein": 32, "carbs": 18, "fat": 24, "category": "Restaurant"}, {"name": "Caesar salad with chicken", "calories": 520, "protein": 35, "carbs": 18, "fat": 32, "category": "Restaurant"}, {"name": "Burger, single patty", "calories": 520, "protein": 27, "carbs": 40, "fat": 28, "category": "Restaurant"}, {"name": "Fries, small", "calories": 230, "protein": 3, "carbs": 30, "fat": 11, "category": "Restaurant"}, {"name": "Turkey bacon, 3 slices", "calories": 90, "protein": 6, "carbs": 0, "fat": 7, "category": "Protein"}, {"name": "Bacon, 3 slices", "calories": 130, "protein": 9, "carbs": 0, "fat": 10, "category": "Protein"}, {"name": "Sausage patty, 1", "calories": 170, "protein": 8, "carbs": 1, "fat": 15, "category": "Protein"}, {"name": "Bagged tuna packet", "calories": 90, "protein": 18, "carbs": 0, "fat": 0.5, "category": "Protein"}, {"name": "Chicken nuggets, 6 pc", "calories": 270, "protein": 14, "carbs": 16, "fat": 17, "category": "Protein"}, {"name": "Deli ham, 4 oz", "calories": 120, "protein": 20, "carbs": 3, "fat": 3, "category": "Protein"}, {"name": "Roast beef deli meat, 4 oz", "calories": 150, "protein": 22, "carbs": 3, "fat": 5, "category": "Protein"}, {"name": "Bison, lean, 4 oz", "calories": 170, "protein": 24, "carbs": 0, "fat": 7, "category": "Protein"}, {"name": "Canned chili with beans, 1 cup", "calories": 280, "protein": 18, "carbs": 30, "fat": 10, "category": "Protein"}, {"name": "Bone broth, 1 cup", "calories": 45, "protein": 10, "carbs": 1, "fat": 0, "category": "Protein"}, {"name": "Colby jack cheese, 1 oz", "calories": 110, "protein": 7, "carbs": 1, "fat": 9, "category": "Protein"}, {"name": "Parmesan, 2 tbsp", "calories": 43, "protein": 4, "carbs": 0, "fat": 3, "category": "Protein"}, {"name": "Nonfat plain yogurt, 1 cup", "calories": 130, "protein": 14, "carbs": 17, "fat": 0, "category": "Protein"}, {"name": "Kefir, 1 cup", "calories": 160, "protein": 10, "carbs": 15, "fat": 5, "category": "Protein"}, {"name": "Skyr, plain, 1 cup", "calories": 110, "protein": 19, "carbs": 7, "fat": 0, "category": "Protein"}, {"name": "Overnight oats jar", "calories": 320, "protein": 15, "carbs": 50, "fat": 8, "category": "Carb"}, {"name": "Basmati rice, cooked, 1 cup", "calories": 190, "protein": 4, "carbs": 41, "fat": 0.5, "category": "Carb"}, {"name": "Brown rice tortilla", "calories": 130, "protein": 3, "carbs": 24, "fat": 2.5, "category": "Carb"}, {"name": "Pita bread", "calories": 170, "protein": 6, "carbs": 35, "fat": 1, "category": "Carb"}, {"name": "Naan, 1 piece", "calories": 260, "protein": 8, "carbs": 45, "fat": 6, "category": "Carb"}, {"name": "Bagel thin", "calories": 110, "protein": 5, "carbs": 24, "fat": 1, "category": "Carb"}, {"name": "Tortilla chips, 1 oz", "calories": 140, "protein": 2, "carbs": 18, "fat": 7, "category": "Carb"}, {"name": "Goldfish crackers, 1 oz", "calories": 140, "protein": 3, "carbs": 20, "fat": 5, "category": "Carb"}, {"name": "Granola cereal, 1/2 cup", "calories": 240, "protein": 5, "carbs": 34, "fat": 9, "category": "Carb"}, {"name": "Cream of rice, 1 serving", "calories": 130, "protein": 3, "carbs": 29, "fat": 0, "category": "Carb"}, {"name": "Pita chips, 1 oz", "calories": 130, "protein": 3, "carbs": 19, "fat": 5, "category": "Carb"}, {"name": "Apple sauce cup", "calories": 50, "protein": 0, "carbs": 13, "fat": 0, "category": "Produce"}, {"name": "Dried mango, 1 oz", "calories": 90, "protein": 0, "carbs": 22, "fat": 0, "category": "Produce"}, {"name": "Dates, 2 medjool", "calories": 133, "protein": 1, "carbs": 36, "fat": 0, "category": "Produce"}, {"name": "Green smoothie, 12 oz", "calories": 140, "protein": 4, "carbs": 28, "fat": 2, "category": "Produce"}, {"name": "Roasted vegetables, 1 cup", "calories": 120, "protein": 3, "carbs": 14, "fat": 6, "category": "Produce"}, {"name": "Coleslaw, 1/2 cup", "calories": 80, "protein": 1, "carbs": 8, "fat": 5, "category": "Produce"}, {"name": "Pickles, 1 spear", "calories": 5, "protein": 0, "carbs": 1, "fat": 0, "category": "Produce"}, {"name": "Kimchi, 1/2 cup", "calories": 20, "protein": 1, "carbs": 4, "fat": 0, "category": "Produce"}, {"name": "Sauerkraut, 1/2 cup", "calories": 14, "protein": 1, "carbs": 3, "fat": 0, "category": "Produce"}, {"name": "Tahini, 1 tbsp", "calories": 89, "protein": 3, "carbs": 3, "fat": 8, "category": "Fat"}, {"name": "Coconut oil, 1 tbsp", "calories": 120, "protein": 0, "carbs": 0, "fat": 14, "category": "Fat"}, {"name": "Cream cheese, 2 tbsp", "calories": 100, "protein": 2, "carbs": 2, "fat": 10, "category": "Fat"}, {"name": "Half and half, 2 tbsp", "calories": 40, "protein": 1, "carbs": 1, "fat": 3, "category": "Fat"}, {"name": "Light mayo, 1 tbsp", "calories": 35, "protein": 0, "carbs": 1, "fat": 3, "category": "Fat"}, {"name": "Sugar-free syrup, 2 tbsp", "calories": 5, "protein": 0, "carbs": 1, "fat": 0, "category": "Fat"}, {"name": "Ketchup, 1 tbsp", "calories": 20, "protein": 0, "carbs": 5, "fat": 0, "category": "Fat"}, {"name": "Mustard, 1 tbsp", "calories": 10, "protein": 0.5, "carbs": 1, "fat": 0.5, "category": "Fat"}, {"name": "Hot sauce, 1 tbsp", "calories": 5, "protein": 0, "carbs": 1, "fat": 0, "category": "Fat"}, {"name": "Feta cheese, 1 oz", "calories": 75, "protein": 4, "carbs": 1, "fat": 6, "category": "Fat"}, {"name": "Quest cookie", "calories": 250, "protein": 15, "carbs": 23, "fat": 11, "category": "Snack"}, {"name": "Protein brownie", "calories": 240, "protein": 20, "carbs": 25, "fat": 7, "category": "Snack"}, {"name": "PB&J sandwich", "calories": 380, "protein": 13, "carbs": 45, "fat": 16, "category": "Snack"}, {"name": "Turkey sandwich", "calories": 350, "protein": 28, "carbs": 35, "fat": 10, "category": "Snack"}, {"name": "Chicken Caesar wrap", "calories": 480, "protein": 30, "carbs": 38, "fat": 22, "category": "Restaurant"}, {"name": "Burrito, chicken", "calories": 700, "protein": 35, "carbs": 70, "fat": 28, "category": "Restaurant"}, {"name": "Breakfast burrito", "calories": 620, "protein": 25, "carbs": 52, "fat": 35, "category": "Restaurant"}, {"name": "Avocado toast, 2 slices", "calories": 320, "protein": 8, "carbs": 34, "fat": 16, "category": "Restaurant"}, {"name": "Smoothie with whey, 16 oz", "calories": 300, "protein": 27, "carbs": 35, "fat": 6, "category": "Snack"}, {"name": "Frozen meal, high protein bowl", "calories": 340, "protein": 24, "carbs": 34, "fat": 10, "category": "Snack"}].map((f, idx) => ({id:'lib'+idx, ...f}));
+let state = loadState();
+let currentRecipeIngredients = [];
+let timerRemaining = 90;
+let timerInterval = null;
+
+function loadState(){
+  try{ return {...defaultData, ...JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}')}; }
+  catch(e){ return structuredClone(defaultData); }
+}
+function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function getAllFoods(){ return [...baseFoodLibrary, ...(state.customFoods || [])]; }
+
+function calculateTargets(profile = state.profile){
+  const w = +profile.weight || 140, h = +profile.height || 65, age = +profile.age || 30;
+  const kg = w * 0.453592, cm = h * 2.54;
+  const bmr = 10*kg + 6.25*cm - 5*age - 161;
+  const actMap = {light:1.4, moderate:1.5, active:1.62};
+  let calories = bmr * (actMap[profile.activity] || 1.5);
+  if(profile.goal === 'lose') calories -= 260;
+  if(profile.goal === 'gain') calories += 180;
+  const protein = Math.round(w * (profile.goal === 'gain' ? 0.82 : 0.8));
+  const fatBase = Math.round(w * (profile.goal === 'lose' ? 0.32 : 0.35));
+  const trainingBase = Math.round(calories + 90);
+  const restBase = Math.round(calories - 90);
+  const trendAdjust = getCalorieAdjustment();
+  const trainingCalories = trainingBase + trendAdjust;
+  const restCalories = restBase + trendAdjust;
+  const trainFat = fatBase;
+  const restFat = fatBase + 5;
+  const trainingCarbs = Math.round((trainingCalories - protein*4 - trainFat*9)/4);
+  const restCarbs = Math.round((restCalories - protein*4 - restFat*9)/4);
+  return {
+    baseCalories: Math.round(calories),
+    adjustment: trendAdjust,
+    training: {calories: trainingCalories, protein, carbs: trainingCarbs, fat: trainFat},
+    rest: {calories: restCalories, protein, carbs: restCarbs, fat: restFat}
+  };
+}
+
+function sevenDayRange(){
+  const dates=[]; for(let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); dates.push(d.toISOString().slice(0,10)); } return dates;
+}
+function lastNDays(arr, n){ return [...arr].sort((a,b)=>a.date.localeCompare(b.date)).slice(-n); }
+function getLogsByDate(arr, d){ return arr.filter(x => x.date === d); }
+function getFoodTotals(d=todayStr()){ return getLogsByDate(state.foodLog,d).reduce((a,x)=>({calories:a.calories+(+x.calories||0), protein:a.protein+(+x.protein||0), carbs:a.carbs+(+x.carbs||0), fat:a.fat+(+x.fat||0)}), {calories:0,protein:0,carbs:0,fat:0}); }
+function getWorkoutVolume(d=todayStr()){ return getLogsByDate(state.workouts,d).reduce((a,x)=>a + (+x.weight||0)*(+x.reps||0)*(+x.sets||0), 0); }
+function getSleepForDate(d=todayStr()){ const x=(state.sleepLog||[]).find(s=>s.date===d); return x ? +x.hours : null; }
+function isTrainingDay(d=todayStr()){ return getLogsByDate(state.workouts,d).length > 0; }
+
+function getCycleInfo(dateStr=todayStr()){
+  const {periodStart,cycleLength,periodLength} = state.cycle || {};
+  if(!periodStart) return {day:null, phase:'Unknown', factor:1};
+  let day = (diffDays(dateStr, periodStart) % cycleLength + cycleLength) % cycleLength + 1;
+  let phase='Follicular', factor=1.03;
+  if(day <= periodLength) { phase='Menstrual'; factor=.92; }
+  else if(day <= Math.floor(cycleLength/2)-2) { phase='Follicular'; factor=1.05; }
+  else if(day <= Math.floor(cycleLength/2)+2) { phase='Ovulatory'; factor=1.08; }
+  else { phase='Luteal'; factor=.97; }
+  return {day, phase, factor};
+}
+
+function getPhaseTargets(d=todayStr()){
+  const base = calculateTargets();
+  const phase = getCycleInfo(d).phase;
+  const training = isTrainingDay(d);
+  const targets = training ? {...base.training} : {...base.rest};
+  if(training && (phase === 'Follicular' || phase === 'Ovulatory')) { targets.carbs += 15; targets.calories += 60; }
+  if(phase === 'Luteal') { targets.calories += 50; targets.carbs += 10; }
+  if(phase === 'Menstrual') { targets.protein += 5; }
+  return targets;
+}
+
+function getRecentWeightPoints(){
+  return [...(state.trends||[])].filter(x => x.weight !== null && x.weight !== '' && !isNaN(x.weight)).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function getCalorieAdjustment(){
+  const pts = getRecentWeightPoints();
+  if(pts.length < 6) return 0;
+  const recent = pts.slice(-7).map(x=>+x.weight);
+  const previous = pts.slice(-14,-7).map(x=>+x.weight);
+  if(previous.length < 3) return 0;
+  const delta = average(recent) - average(previous);
+  if(state.profile.goal === 'lose') {
+    if(delta > 0.35) return -120;
+    if(delta < -1.2) return +90;
+    return 0;
+  }
+  if(state.profile.goal === 'gain') {
+    if(delta > 1.2) return -80;
+    if(delta < 0.2) return +100;
+    return 0;
+  }
+  if(delta > 0.7) return -100;
+  if(delta < -0.7) return +100;
+  return 0;
+}
+function calorieAdjustmentText(){
+  const adjust = getCalorieAdjustment();
+  if(adjust === 0) return 'No calorie adjustment needed from weight trend right now.';
+  return adjust > 0 ? `Weight trend is drifting down, so targets are adding ${adjust} kcal.` : `Weight trend is drifting up, so targets are reducing ${Math.abs(adjust)} kcal.`;
+}
+
+function getReadiness(dateStr=todayStr()){
+  const phase = getCycleInfo(dateStr);
+  const yesterday = new Date(startOfDay(dateStr).getTime()-86400000).toISOString().slice(0,10);
+  const sleepVals = lastNDays(state.sleepLog||[], 3).map(x=>+x.hours).filter(x=>!isNaN(x));
+  const sleep = (getSleepForDate(dateStr) ?? average(sleepVals)) || 7;
+  const yVolume = getWorkoutVolume(yesterday);
+  const food = getFoodTotals(yesterday);
+  const yTargets = getPhaseTargets(yesterday);
+  let score = 68;
+  score += (sleep - 7) * 6;
+  score += food.protein >= yTargets.protein ? 6 : -4;
+  score += food.carbs >= yTargets.carbs * .85 ? 4 : -3;
+  score += phase.phase === 'Follicular' ? 5 : phase.phase === 'Ovulatory' ? 8 : phase.phase === 'Menstrual' ? -6 : -2;
+  score += yVolume > 13000 ? -8 : yVolume > 8000 ? -4 : 2;
+  score = Math.round(clamp(score, 35, 96));
+  let text = 'Moderate readiness. Quality work should feel good.';
+  if(score >= 82) text = 'High readiness. Strong day to push a lift or add quality volume.';
+  else if(score < 60) text = 'Lower readiness. Keep the session easier, or prioritize recovery.';
+  return {score, text};
+}
+
+function getFatigueStatus(){
+  const sleep7 = lastNDays(state.sleepLog||[], 7).map(x=>+x.hours).filter(x=>!isNaN(x));
+  const vol7 = sevenDayRange().map(d=>getWorkoutVolume(d));
+  const recentVol = sum(vol7.slice(-3));
+  const histMedian = median(vol7.filter(v=>v>0)) || 1;
+  let score = 0;
+  if(average(sleep7) < 6.8) score += 2;
+  if(recentVol > histMedian * 2.3 && recentVol > 9000) score += 2;
+  if(getReadiness().score < 60) score += 1;
+  if(score >= 4) return {label:'High', text:'Sleep or recent volume suggests you should back off a little today.'};
+  if(score >= 2) return {label:'Moderate', text:'A normal session is fine, but keep an eye on effort and recovery.'};
+  return {label:'Low', text:'Recovery status looks solid.'};
+}
+
+function proteinNudge(cur,target){
+  if(cur >= target) return 'You are on target. Great work.';
+  if(cur < 30) return 'Try to get 25–30g protein at your next meal.';
+  return `About ${Math.max(0,Math.round(target-cur))}g protein left today.`;
+}
+
+function phaseGuidance(phase){
+  const map = {
+    Menstrual:['Use lower fatigue training, extra warm-up time, and iron-rich foods if you feel depleted.','Protein, hydration, and sleep matter more than pushing volume.'],
+    Follicular:['Great time to push progressive overload and train hard.','Higher carbs before lifting often pay off here.'],
+    Ovulatory:['Good window for PR attempts if sleep is solid.','Take your warm-up seriously and use your strongest lifts.'],
+    Luteal:['Maintain intensity if it feels good, but trim volume when fatigue rises.','Fiber, protein, and a little extra sleep often help.'],
+    Unknown:['Add cycle settings to unlock better guidance.']
+  };
+  return map[phase] || map.Unknown;
+}
+
+function e1rm(w,r){ w=+w||0; r=+r||0; return w*(1+r/30); }
+function exerciseNames(){ return [...new Set((state.workouts||[]).map(w=>w.exercise).filter(Boolean))].sort(); }
+function exerciseHistory(name){ return (state.workouts||[]).filter(w => w.exercise.toLowerCase() === name.toLowerCase()).sort((a,b)=>a.date.localeCompare(b.date)); }
+
+function getRecentPRMessages(limit=8){
+  const workouts = [...(state.workouts||[])].sort((a,b)=>a.date.localeCompare(b.date));
+  const best = {}, msgs = [];
+  workouts.forEach(w => {
+    const key = w.exercise.toLowerCase();
+    const vol = (+w.weight||0)*(+w.reps||0)*(+w.sets||0);
+    const cur = best[key] || {weight:0,reps:0,volume:0,e1rm:0};
+    const local = [];
+    if((+w.weight||0) > cur.weight) { local.push(`Weight PR: ${w.exercise} ${w.weight} lb`); cur.weight = +w.weight||0; }
+    if((+w.reps||0) > cur.reps) { local.push(`Rep PR: ${w.exercise} ${w.reps} reps`); cur.reps = +w.reps||0; }
+    if(vol > cur.volume) { local.push(`Volume PR: ${w.exercise} ${Math.round(vol)}`); cur.volume = vol; }
+    const one = e1rm(w.weight,w.reps);
+    if(one > cur.e1rm + 0.5) { local.push(`Estimated 1RM PR: ${w.exercise} ${Math.round(one)} lb`); cur.e1rm = one; }
+    best[key] = cur;
+    local.forEach(msg => msgs.push({date:w.date, msg}));
+  });
+  return msgs.slice(-limit).reverse();
+}
+
+function getOverloadSuggestions(){
+  return exerciseNames().slice(-10).map(name => {
+    const hist = exerciseHistory(name);
+    const last = hist[hist.length-1];
+    if(!last) return null;
+    const heavy = ['squat','deadlift','hip thrust','bench','press','rdl','row'].some(k => name.toLowerCase().includes(k));
+    const inc = heavy ? 5 : 2.5;
+    return `${name}: next session try ${(+last.weight||0)+inc} lb for ${last.reps} reps, or keep ${last.weight} and add 1 rep.`;
+  }).filter(Boolean).reverse();
+}
+
+function getPredictions(){
+  return exerciseNames().slice(0,10).map(name => {
+    const hist = exerciseHistory(name);
+    if(hist.length < 3) return null;
+    const pts = hist.map(w => {
+      const t = startOfDay(w.date).getTime()/86400000;
+      return {x:t, y:e1rm(w.weight,w.reps)};
+    });
+    const xs = pts.map(p=>p.x), ys = pts.map(p=>p.y);
+    const xBar = average(xs), yBar = average(ys);
+    let num=0, den=0;
+    pts.forEach(p => { num += (p.x-xBar)*(p.y-yBar); den += (p.x-xBar)*(p.x-xBar); });
+    const slope = den ? num/den : 0;
+    const current = ys[ys.length-1];
+    const projected30 = current + slope*30;
+    if(!isFinite(projected30)) return null;
+    const rounded = Math.round(projected30);
+    const pace = slope > 0.02 ? 'Upward' : slope < -0.02 ? 'Flat to down' : 'Stable';
+    return `${name}: ${pace} trend. Estimated 1RM is about ${Math.round(current)} lb now and projects around ${rounded} lb in 30 days if this pace holds.`;
+  }).filter(Boolean).slice(0,6);
+}
+
+function getCyclePerformance(){
+  const phaseMap = {};
+  (state.workouts||[]).forEach(w => {
+    const phase = getCycleInfo(w.date).phase;
+    if(!phaseMap[phase]) phaseMap[phase] = [];
+    phaseMap[phase].push(e1rm(w.weight,w.reps));
+  });
+  return Object.entries(phaseMap).map(([phase,vals]) => {
+    const avg = average(vals);
+    return {phase, avg, count: vals.length};
+  }).sort((a,b)=>b.avg-a.avg);
+}
+
+function weekData(){
+  return sevenDayRange().map(d => ({
+    date:d, food:getFoodTotals(d), volume:getWorkoutVolume(d), sleep:getSleepForDate(d) || 0,
+    trend:(state.trends||[]).find(t=>t.date===d)
+  }));
+}
+
+function getMeasurementInsights(){
+  const pts = [...(state.trends||[])].sort((a,b)=>a.date.localeCompare(b.date));
+  if(pts.length < 2) return ['Log body weight, waist, and hips at least weekly to unlock body composition insights.'];
+  const first = pts[0], last = pts[pts.length-1];
+  const msgs = [];
+  if(last.weight != null && first.weight != null) msgs.push(`Weight trend: ${fmtNum(last.weight-first.weight)} lb from your first logged entry.`);
+  if(last.waist != null && first.waist != null) msgs.push(`Waist change: ${fmtNum(last.waist-first.waist)} in.`);
+  if(last.hips != null && first.hips != null) msgs.push(`Hip change: ${fmtNum(last.hips-first.hips)} in.`);
+  if((last.weight ?? 0) <= (first.weight ?? 0) + 0.5 && (last.waist ?? 999) < (first.waist ?? 999)) msgs.push('This pattern can fit recomposition: similar body weight with a smaller waist.');
+  return msgs;
+}
+
+function encouragementMessages(){
+  const dates = sevenDayRange();
+  const proteinHits = dates.filter(d => getFoodTotals(d).protein >= getPhaseTargets(d).protein * 0.9).length;
+  const workoutDays = new Set((state.workouts||[]).filter(w=>dates.includes(w.date)).map(w=>w.date)).size;
+  const sleepAvg = average(lastNDays(state.sleepLog||[], 7).map(x=>+x.hours).filter(x=>!isNaN(x)));
+  const prs = getRecentPRMessages(4);
+  const msgs = [];
+  if(proteinHits >= 5) msgs.push(`You hit protein on ${proteinHits} of the last 7 days. That is exactly the kind of consistency that builds muscle.`);
+  if(workoutDays >= 3) msgs.push(`You logged ${workoutDays} workouts this week. Momentum is on your side.`);
+  if(sleepAvg >= 7.2) msgs.push(`Sleep has averaged ${fmtNum(sleepAvg)} hours lately. Recovery looks strong.`);
+  if(prs.length) msgs.push(`Recent PR energy: ${prs[0].msg}.`);
+  msgs.push('You do not need perfect days. You need enough good days in a row for the trend to work in your favor.');
+  return msgs.slice(0,5);
+}
+
+function buildCoaching(){
+  const phase = getCycleInfo();
+  const readiness = getReadiness();
+  const fatigue = getFatigueStatus();
+  const sleep = (getSleepForDate() ?? average(lastNDays(state.sleepLog||[], 3).map(x=>+x.hours).filter(x=>!isNaN(x))));
+  const totals = getFoodTotals();
+  const targets = getPhaseTargets();
+  const msgs = [];
+  msgs.push(`${phase.phase} phase: ${phaseGuidance(phase.phase)[0]}`);
+  msgs.push(readiness.text);
+  if(fatigue.label !== 'Low') msgs.push(`Fatigue: ${fatigue.text}`);
+  if((sleep || 0) < 7) msgs.push(`Sleep is on the low side${sleep ? ` at ${fmtNum(sleep)}h` : ''}. Aim for 30–60 more minutes tonight.`);
+  if(totals.protein < targets.protein * 0.6) msgs.push('Protein is behind pace. Greek yogurt, a shake, cottage cheese, eggs, chicken, or turkey would close the gap fast.');
+  if(isTrainingDay() && totals.carbs < targets.carbs * 0.55) msgs.push('Carbs are light for a training day. Rice, oats, fruit, bread, or potatoes would support performance.');
+  if(getCalorieAdjustment() !== 0) msgs.push(calorieAdjustmentText());
+  const overload = getOverloadSuggestions()[0];
+  if(overload) msgs.push('Overload idea: ' + overload);
+  return msgs.slice(0,6);
+}
+
+function recipeMacros(recipe){
+  const totals = recipe.ingredients.reduce((a,x)=>({calories:a.calories+(+x.calories||0),protein:a.protein+(+x.protein||0),carbs:a.carbs+(+x.carbs||0),fat:a.fat+(+x.fat||0)}),{calories:0,protein:0,carbs:0,fat:0});
+  const s = Math.max(1,+recipe.servings||1);
+  return {calories:totals.calories/s, protein:totals.protein/s, carbs:totals.carbs/s, fat:totals.fat/s};
+}
+
+function setInputs(){
+  const p=state.profile, c=state.cycle;
+  document.getElementById('weight').value = p.weight || '';
+  document.getElementById('height').value = p.height || '';
+  document.getElementById('age').value = p.age || '';
+  document.getElementById('activity').value = p.activity || 'moderate';
+  document.getElementById('liftDays').value = String(p.liftDays || 4);
+  document.getElementById('goal').value = p.goal || 'recomp';
+  document.getElementById('periodStart').value = c.periodStart || todayStr();
+  document.getElementById('cycleLength').value = c.cycleLength || 28;
+  document.getElementById('periodLength').value = c.periodLength || 5;
+  ['foodDate','workoutDate','sleepDate','trendDate'].forEach(id => document.getElementById(id).value = document.getElementById(id).value || todayStr());
+  const catSelect = document.getElementById('foodCategory');
+  if(!catSelect.dataset.ready){
+    const cats = ['All', ...new Set(getAllFoods().map(f=>f.category))];
+    catSelect.innerHTML = cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+    catSelect.dataset.ready = '1';
+  }
+  document.getElementById('foodLibraryCount').textContent = `${getAllFoods().length} foods`;
+}
+
+function renderTargets(){
+  const t = calculateTargets();
+  const box = document.getElementById('targetCards');
+  box.innerHTML = '';
+  [['Training day', t.training], ['Rest day', t.rest]].forEach(([label,obj]) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `<div class="between"><strong>${label}</strong><span class="pill">${obj.calories} kcal</span></div>
+      <div class="small" style="margin-top:8px">Protein ${obj.protein}g • Carbs ${obj.carbs}g • Fat ${obj.fat}g</div>`;
+    box.appendChild(div);
+  });
+  const adj = document.createElement('div');
+  adj.className='item';
+  adj.innerHTML = `<div class="between"><strong>Weight trend adjustment</strong><span class="pill">${t.adjustment > 0 ? '+' : ''}${t.adjustment} kcal</span></div><div class="small" style="margin-top:8px">${calorieAdjustmentText()}</div>`;
+  box.appendChild(adj);
+}
+
+function setProgress(prefix, value, target, suffix){
+  const pct = clamp((value/Math.max(target,1))*100, 0, 100);
+  document.getElementById(prefix+'ProgressText').textContent = `${Math.round(value)} / ${target} ${suffix}`;
+  document.getElementById(prefix+'Bar').style.width = pct + '%';
+}
+
+function renderDashboard(){
+  const phase = getCycleInfo();
+  const readiness = getReadiness();
+  const fatigue = getFatigueStatus();
+  const totals = getFoodTotals();
+  const targets = getPhaseTargets();
+  const workoutsWeek = sevenDayRange().flatMap(d => getLogsByDate(state.workouts||[], d));
+  document.getElementById('readinessScore').textContent = readiness.score;
+  document.getElementById('readinessText').textContent = readiness.text;
+  document.getElementById('fatigueStatus').textContent = fatigue.label;
+  document.getElementById('fatigueText').textContent = fatigue.text;
+  document.getElementById('phaseLabel').textContent = phase.phase + (phase.day ? ` • Day ${phase.day}` : '');
+  document.getElementById('phaseTip').textContent = phaseGuidance(phase.phase)[0];
+  document.getElementById('dayTypeChip').textContent = isTrainingDay() ? 'Training day' : 'Rest day';
+  document.getElementById('calTargetTop').textContent = targets.calories + ' kcal';
+  document.getElementById('calorieAdjustmentText').textContent = calorieAdjustmentText();
+  document.getElementById('macroNote').textContent = proteinNudge(totals.protein, targets.protein);
+  document.getElementById('liveStatus').textContent = `${new Set(workoutsWeek.map(w=>w.date)).size} workouts this week`;
+  setProgress('protein', totals.protein, targets.protein, 'g');
+  setProgress('carb', totals.carbs, targets.carbs, 'g');
+  setProgress('fat', totals.fat, targets.fat, 'g');
+  setProgress('cal', totals.calories, targets.calories, 'kcal');
+  document.getElementById('coachingList').innerHTML = buildCoaching().map(x=>`<div class="item">${x}</div>`).join('');
+  drawLineChart(document.getElementById('proteinChart'), weekData().map(x=>({label:formatDateShort(x.date), value:Math.round(x.food.protein)})), 'Protein');
+  drawLineChart(document.getElementById('volumeChart'), weekData().map(x=>({label:formatDateShort(x.date), value:Math.round(x.volume)})), 'Volume');
+  drawLineChart(document.getElementById('weightChart'), weekData().map(x=>({label:formatDateShort(x.date), value:x.trend?.weight ?? null})), 'Weight');
+  drawLineChart(document.getElementById('sleepChart'), weekData().map(x=>({label:formatDateShort(x.date), value:x.sleep || null})), 'Sleep');
+}
+
+function renderFood(){
+  const search = document.getElementById('foodSearch').value.trim().toLowerCase();
+  const cat = document.getElementById('foodCategory').value || 'All';
+  const foods = getAllFoods().filter(f => {
+    const matchSearch = !search || f.name.toLowerCase().includes(search);
+    const matchCat = cat === 'All' || f.category === cat;
+    return matchSearch && matchCat;
+  }).slice(0,30);
+  document.getElementById('foodSearchResults').innerHTML = foods.map(f => `
+    <div class="item">
+      <div class="between"><strong>${f.name}</strong><span class="pill">${f.calories} kcal</span></div>
+      <div class="small">${f.category} • P ${f.protein} • C ${f.carbs} • F ${f.fat}</div>
+      <div class="row" style="margin-top:10px"><button class="secondary" onclick="fillFood('${f.id}')">Use</button></div>
+    </div>`).join('') || '<div class="hint">No matches yet.</div>';
+  const date = document.getElementById('foodDate').value || todayStr();
+  const items = getLogsByDate(state.foodLog||[], date);
+  document.getElementById('foodLogList').innerHTML = items.map(i=>`<div class="item between"><div><strong>${i.name}</strong><div class="small">${i.calories} kcal • P ${i.protein} • C ${i.carbs} • F ${i.fat}</div></div><button class="ghost" onclick="deleteFood('${i.id}')">Delete</button></div>`).join('') || '<div class="hint">No food logged for this date.</div>';
+  renderRecipeBuilder();
+}
+function fillFood(id){
+  const f = getAllFoods().find(x=>x.id===id); if(!f) return;
+  document.getElementById('foodName').value = f.name;
+  document.getElementById('foodCalories').value = f.calories;
+  document.getElementById('foodProtein').value = f.protein;
+  document.getElementById('foodCarbs').value = f.carbs;
+  document.getElementById('foodFat').value = f.fat;
+}
+function deleteFood(id){ state.foodLog = (state.foodLog||[]).filter(x=>x.id!==id); saveState(); renderAll(); }
+function addFood(){
+  const item = {
+    id:uniqId(), date:document.getElementById('foodDate').value || todayStr(), name:document.getElementById('foodName').value.trim() || 'Food item',
+    calories:+document.getElementById('foodCalories').value || 0, protein:+document.getElementById('foodProtein').value || 0,
+    carbs:+document.getElementById('foodCarbs').value || 0, fat:+document.getElementById('foodFat').value || 0
+  };
+  state.foodLog.push(item); saveState(); renderAll();
+}
+function saveCustomFood(){
+  const item = {
+    id:uniqId(), category:'Custom', name:document.getElementById('foodName').value.trim() || 'Custom food',
+    calories:+document.getElementById('foodCalories').value || 0, protein:+document.getElementById('foodProtein').value || 0,
+    carbs:+document.getElementById('foodCarbs').value || 0, fat:+document.getElementById('foodFat').value || 0
+  };
+  state.customFoods.push(item); saveState(); setInputs(); renderFood();
+  alert('Custom food saved.');
+}
+
+function renderRecipeBuilder(){
+  const q = document.getElementById('recipeSearch').value.trim().toLowerCase();
+  const results = getAllFoods().filter(f=>!q || f.name.toLowerCase().includes(q)).slice(0,10);
+  document.getElementById('recipeSearchResults').innerHTML = results.map(f=>`<div class="item between"><div><strong>${f.name}</strong><div class="small">${f.calories} kcal • P ${f.protein} • C ${f.carbs} • F ${f.fat}</div></div><button class="secondary" onclick="addRecipeIngredient('${f.id}')">Add</button></div>`).join('') || '<div class="hint">Search ingredients to build a recipe.</div>';
+  const ingBox = document.getElementById('recipeIngredients');
+  ingBox.innerHTML = currentRecipeIngredients.length ? currentRecipeIngredients.map((x,idx)=>`<div class="item between"><div><strong>${x.name}</strong><div class="small">${x.calories} kcal • P ${x.protein} • C ${x.carbs} • F ${x.fat}</div></div><button class="ghost" onclick="removeRecipeIngredient(${idx})">Remove</button></div>`).join('') : '<div class="hint">No ingredients added yet.</div>';
+  const recBox = document.getElementById('savedRecipes');
+  recBox.innerHTML = (state.recipes||[]).map(r=>{ const per=recipeMacros(r); return `<div class="item"><div class="between"><strong>${r.name}</strong><span class="pill">${r.servings} servings</span></div><div class="small">Per serving: ${Math.round(per.calories)} kcal • P ${fmtNum(per.protein)} • C ${fmtNum(per.carbs)} • F ${fmtNum(per.fat)}</div><div class="row" style="margin-top:10px"><button class="secondary" onclick="logRecipe('${r.id}')">Log 1 serving</button><button class="ghost" onclick="deleteRecipe('${r.id}')">Delete</button></div></div>`; }).join('') || '<div class="hint">No saved recipes yet.</div>';
+}
+function addRecipeIngredient(id){ const f=getAllFoods().find(x=>x.id===id); if(f){ currentRecipeIngredients.push({...f}); renderRecipeBuilder(); } }
+function removeRecipeIngredient(idx){ currentRecipeIngredients.splice(idx,1); renderRecipeBuilder(); }
+function saveRecipe(){
+  const name = document.getElementById('recipeName').value.trim();
+  const servings = +document.getElementById('recipeServings').value || 1;
+  if(!name || !currentRecipeIngredients.length) return alert('Add a recipe name and at least one ingredient.');
+  state.recipes.push({id:uniqId(), name, servings, ingredients:currentRecipeIngredients});
+  currentRecipeIngredients = [];
+  document.getElementById('recipeName').value = '';
+  document.getElementById('recipeServings').value = 1;
+  saveState(); renderAll();
+}
+function logRecipe(id){
+  const r = (state.recipes||[]).find(x=>x.id===id); if(!r) return;
+  const per = recipeMacros(r);
+  state.foodLog.push({id:uniqId(), date:document.getElementById('foodDate').value || todayStr(), name:r.name + ' (1 serving)', calories:Math.round(per.calories), protein:+fmtNum(per.protein), carbs:+fmtNum(per.carbs), fat:+fmtNum(per.fat)});
+  saveState(); renderAll();
+}
+function deleteRecipe(id){ state.recipes = (state.recipes||[]).filter(x=>x.id!==id); saveState(); renderAll(); }
+
+function renderWorkouts(){
+  const date = document.getElementById('workoutDate').value || todayStr();
+  const items = getLogsByDate(state.workouts||[], date);
+  document.getElementById('workoutLogList').innerHTML = items.map(i=>`<div class="item between"><div><strong>${i.exercise}</strong><div class="small">${i.weight} lb × ${i.reps} reps × ${i.sets} sets</div></div><button class="ghost" onclick="deleteWorkout('${i.id}')">Delete</button></div>`).join('') || '<div class="hint">No sets logged for this date.</div>';
+  document.getElementById('prList').innerHTML = getRecentPRMessages().map(p=>`<div class="item"><strong>${formatDateShort(p.date)}</strong><div class="small">${p.msg}</div></div>`).join('') || '<div class="hint">PRs will appear here as you log repeated lifts.</div>';
+  document.getElementById('overloadList').innerHTML = getOverloadSuggestions().map(x=>`<div class="item">${x}</div>`).join('') || '<div class="hint">Log a few repeated exercises to unlock overload suggestions.</div>';
+  document.getElementById('predictionList').innerHTML = getPredictions().map(x=>`<div class="item">${x}</div>`).join('') || '<div class="hint">Once you have at least 3 entries for a lift, your app will project its likely PR timeline.</div>';
+  const select = document.getElementById('exerciseChartSelect');
+  const names = exerciseNames();
+  select.innerHTML = names.length ? names.map(n=>`<option value="${n}">${n}</option>`).join('') : '<option value="">No exercise data yet</option>';
+  const selected = select.value || names[0] || '';
+  if(selected) select.value = selected;
+  renderStrengthChart();
+}
+
+function renderStrengthChart(){
+  const selected = document.getElementById('exerciseChartSelect').value;
+  const hist = selected ? exerciseHistory(selected) : [];
+  const pts = hist.map(w => ({label:formatDateShort(w.date), value:Math.round(e1rm(w.weight,w.reps))}));
+  drawLineChart(document.getElementById('strengthChart'), pts, selected ? selected + ' e1RM' : 'Strength');
+  const mPts = lastNDays((state.trends||[]), 7).map(x=>({label:formatDateShort(x.date), a:x.waist ?? null, b:x.hips ?? null}));
+  drawMultiLineChart(document.getElementById('measurementChart'), mPts, 'Waist', 'Hips');
+}
+
+function addWorkout(){
+  const w = {id:uniqId(), date:document.getElementById('workoutDate').value || todayStr(), exercise:document.getElementById('exerciseName').value.trim() || 'Exercise', weight:+document.getElementById('exerciseWeight').value || 0, reps:+document.getElementById('exerciseReps').value || 0, sets:+document.getElementById('exerciseSets').value || 0};
+  state.workouts.push(w); saveState(); renderAll();
+}
+function deleteWorkout(id){ state.workouts = (state.workouts||[]).filter(x=>x.id!==id); saveState(); renderAll(); }
+
+function renderRecovery(){
+  const recentSleep = lastNDays(state.sleepLog||[], 7).reverse();
+  document.getElementById('sleepLogList').innerHTML = recentSleep.map(x=>`<div class="item between"><div><strong>${formatDateShort(x.date)}</strong><div class="small">${fmtNum(x.hours)} hours</div></div><button class="ghost" onclick="deleteSleep('${x.id}')">Delete</button></div>`).join('') || '<div class="hint">No sleep entries yet.</div>';
+  document.getElementById('measurementInsights').innerHTML = getMeasurementInsights().map(x=>`<div class="item">${x}</div>`).join('');
+}
+function addSleep(){
+  const date = document.getElementById('sleepDate').value || todayStr();
+  state.sleepLog = (state.sleepLog||[]).filter(x=>x.date !== date);
+  state.sleepLog.push({id:uniqId(), date, hours:+document.getElementById('sleepHours').value || 0});
+  saveState(); renderAll();
+}
+function deleteSleep(id){ state.sleepLog = (state.sleepLog||[]).filter(x=>x.id!==id); saveState(); renderAll(); }
+
+function addTrend(){
+  const date = document.getElementById('trendDate').value || todayStr();
+  state.trends = (state.trends||[]).filter(x=>x.date !== date);
+  state.trends.push({
+    id:uniqId(), date,
+    weight:document.getElementById('trendWeight').value === '' ? null : +document.getElementById('trendWeight').value,
+    waist:document.getElementById('trendWaist').value === '' ? null : +document.getElementById('trendWaist').value,
+    hips:document.getElementById('trendHips').value === '' ? null : +document.getElementById('trendHips').value
+  });
+  saveState(); renderAll();
+}
+
+function renderCycle(){
+  const phase = getCycleInfo();
+  const recs = phaseGuidance(phase.phase);
+  const targets = getPhaseTargets();
+  const list = [
+    `${phase.phase} phase • day ${phase.day ?? '-'}`,
+    recs[0],
+    recs[1] || 'Keep sleep and protein steady.',
+    `Macro emphasis today: protein ${targets.protein}g, carbs ${targets.carbs}g, fat ${targets.fat}g.`,
+    isTrainingDay() ? 'Because today is a training day, carbs are being held higher.' : 'Because today is a rest day, carbs are slightly lower and fats slightly higher.'
+  ];
+  document.getElementById('cycleRecList').innerHTML = list.map(x=>`<div class="item">${x}</div>`).join('');
+  const perf = getCyclePerformance();
+  document.getElementById('cyclePerfList').innerHTML = perf.length ? perf.map(p=>`<div class="item"><strong>${p.phase}</strong><div class="small">Average estimated 1RM signal: ${Math.round(p.avg)} • based on ${p.count} logged sets</div></div>`).join('') : '<div class="hint">Log workouts across multiple cycle phases to see your performance patterns.</div>';
+}
+
+function renderSummary(){
+  const dates = sevenDayRange();
+  const proteinAvg = average(dates.map(d=>getFoodTotals(d).protein));
+  const calAvg = average(dates.map(d=>getFoodTotals(d).calories));
+  const workouts = new Set((state.workouts||[]).filter(w=>dates.includes(w.date)).map(w=>w.date)).size;
+  const sleepAvg = average(lastNDays(state.sleepLog||[], 7).map(x=>+x.hours).filter(x=>!isNaN(x)));
+  const prs = getRecentPRMessages(6);
+  const summary = [
+    `Protein average: ${Math.round(proteinAvg)} g/day.`,
+    `Calories average: ${Math.round(calAvg)} kcal/day.`,
+    `Workouts completed: ${workouts} in the last 7 days.`,
+    `Sleep average: ${fmtNum(sleepAvg)} hours.`,
+    calorieAdjustmentText(),
+    ...getMeasurementInsights().slice(0,2)
+  ];
+  document.getElementById('weeklySummaryList').innerHTML = summary.map(x=>`<div class="item">${x}</div>`).join('');
+  document.getElementById('encouragementList').innerHTML = encouragementMessages().map(x=>`<div class="item">${x}</div>`).join('');
+}
+
+function saveProfile(){
+  state.profile = {
+    weight:+document.getElementById('weight').value || 140,
+    height:+document.getElementById('height').value || 65,
+    age:+document.getElementById('age').value || 30,
+    activity:document.getElementById('activity').value,
+    liftDays:+document.getElementById('liftDays').value || 4,
+    goal:document.getElementById('goal').value
+  };
+  saveState(); renderAll();
+}
+function saveCycle(){
+  state.cycle = {
+    periodStart:document.getElementById('periodStart').value || todayStr(),
+    cycleLength:+document.getElementById('cycleLength').value || 28,
+    periodLength:+document.getElementById('periodLength').value || 5
+  };
+  saveState(); renderAll();
+}
+
+function startTimer(){
+  timerRemaining = +document.getElementById('timerSeconds').value || 90;
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    updateTimerDisplay();
+    if(timerRemaining <= 0){ clearInterval(timerInterval); alert('Rest timer complete.'); }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const m = String(Math.floor(timerRemaining/60)).padStart(2,'0');
+  const s = String(timerRemaining%60).padStart(2,'0');
+  document.getElementById('timerDisplay').textContent = `${m}:${s}`;
+}
+
+function loadDemo(){
+  state = JSON.parse(JSON.stringify(defaultData));
+  state.cycle.periodStart = new Date(Date.now()-8*86400000).toISOString().slice(0,10);
+  const ds = sevenDayRange();
+  ds.forEach((d,i)=>{
+    [['Greek yogurt, 2%, 1 cup',150,20,6,4],['Protein powder scoop',130,25,3,2],['Chicken breast, cooked, 4 oz',187,35,0,4],['Microwave rice, 1 cup',210,4,45,1],['Banana, medium',105,1,27,0],['Ground beef 93%, 4 oz',170,24,0,8],['Blueberries, 1 cup',85,1,21,0.5]].slice(0, 4 + (i%3)).forEach(f => state.foodLog.push({id:uniqId(), date:d, name:f[0], calories:f[1], protein:f[2], carbs:f[3], fat:f[4]}));
+    state.sleepLog.push({id:uniqId(), date:d, hours:[7.4,7.9,6.8,8.2,7.6,6.9,8.0][i]});
+    state.trends.push({id:uniqId(), date:d, weight:140 - i*0.05, waist:29.8 - i*0.03, hips:39.8 + (i>3?0.05:0)});
+  });
+  [0,1,3,5].forEach((idx,j)=>{
+    const d = ds[idx];
+    [['Barbell squat',95+j*5,8,3],['Romanian deadlift',115+j*5,8,3],['Lat pulldown',70+j*5,10,3],['Hip thrust',135+j*10,10,3],['Shoulder press',25+j*2.5,10,3]].forEach(x => state.workouts.push({id:uniqId(), date:d, exercise:x[0], weight:x[1], reps:x[2], sets:x[3]}));
+  });
+  state.recipes.push({id:uniqId(), name:'Turkey taco bowl', servings:2, ingredients:[getAllFoods()[3], getAllFoods()[12], getAllFoods()[88], getAllFoods()[52]]});
+  saveState(); renderAll();
+}
+
+function exportData(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lift-fuel-v5-data.json';
+  a.click();
+}
+function importData(file){
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      state = {...defaultData, ...JSON.parse(reader.result)};
+      saveState(); renderAll(); alert('Import complete.');
+    } catch(e) { alert('Import failed.'); }
+  };
+  reader.readAsText(file);
+}
+
+function drawLineChart(canvas, points, label){
+  const ctx = canvas.getContext('2d');
+  const w=canvas.width, h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#0f1629'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='#2c3345'; ctx.lineWidth=1;
+  for(let i=0;i<4;i++){ const y=20+i*(h-40)/3; ctx.beginPath(); ctx.moveTo(36,y); ctx.lineTo(w-12,y); ctx.stroke(); }
+  const vals = points.map(p=>p.value).filter(v=>v!==null && !isNaN(v));
+  ctx.fillStyle='#b8c0d9'; ctx.font='12px sans-serif'; ctx.fillText(label, 14, 16);
+  if(!vals.length){ ctx.fillText('Log data to see this chart.', 14, h/2); return; }
+  const min = Math.min(...vals), max = Math.max(...vals), span = Math.max(1, max-min);
+  ctx.strokeStyle='#8b5cf6'; ctx.lineWidth=3; ctx.beginPath();
+  points.forEach((p,i)=>{
+    if(p.value===null || isNaN(p.value)) return;
+    const x = 40 + i*((w-60)/Math.max(points.length-1,1));
+    const y = h-24 - ((p.value-min)/span)*(h-56);
+    if(i===0 || points[i-1].value===null || isNaN(points[i-1].value)) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  points.forEach((p,i)=>{
+    if(p.value===null || isNaN(p.value)) return;
+    const x = 40 + i*((w-60)/Math.max(points.length-1,1));
+    const y = h-24 - ((p.value-min)/span)*(h-56);
+    ctx.fillStyle='#22c55e'; ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#94a3b8'; ctx.fillText(p.label, x-12, h-8);
+  });
+}
+function drawMultiLineChart(canvas, points, aLabel, bLabel){
+  const ctx = canvas.getContext('2d'); const w=canvas.width,h=canvas.height;
+  ctx.clearRect(0,0,w,h); ctx.fillStyle='#0f1629'; ctx.fillRect(0,0,w,h);
+  ctx.fillStyle='#b8c0d9'; ctx.font='12px sans-serif'; ctx.fillText(`${aLabel} vs ${bLabel}`,14,16);
+  const vals = points.flatMap(p=>[p.a,p.b]).filter(v=>v!==null && !isNaN(v));
+  if(!vals.length){ ctx.fillText('Log measurements to see this chart.', 14, h/2); return; }
+  const min=Math.min(...vals), max=Math.max(...vals), span=Math.max(1,max-min);
+  const draw = (key,color)=>{ ctx.strokeStyle=color; ctx.lineWidth=3; ctx.beginPath(); points.forEach((p,i)=>{ if(p[key]===null || isNaN(p[key])) return; const x=40+i*((w-60)/Math.max(points.length-1,1)); const y=h-24-((p[key]-min)/span)*(h-56); if(i===0 || points[i-1][key]===null || isNaN(points[i-1][key])) ctx.moveTo(x,y); else ctx.lineTo(x,y); }); ctx.stroke(); };
+  draw('a','#8b5cf6'); draw('b','#22c55e');
+  points.forEach((p,i)=>{ const x=40+i*((w-60)/Math.max(points.length-1,1)); ctx.fillStyle='#94a3b8'; ctx.fillText(p.label,x-12,h-8); });
+}
+
+function renderAll(){
+  setInputs();
+  renderTargets();
+  renderDashboard();
+  renderFood();
+  renderWorkouts();
+  renderRecovery();
+  renderCycle();
+  renderSummary();
+  updateTimerDisplay();
+}
+
+window.fillFood = fillFood;
+window.deleteFood = deleteFood;
+window.addRecipeIngredient = addRecipeIngredient;
+window.removeRecipeIngredient = removeRecipeIngredient;
+window.logRecipe = logRecipe;
+window.deleteRecipe = deleteRecipe;
+window.deleteWorkout = deleteWorkout;
+window.deleteSleep = deleteSleep;
+
+document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(tab.dataset.view).classList.add('active');
+}));
+document.getElementById('saveProfileBtn').onclick = saveProfile;
+document.getElementById('recalcBtn').onclick = saveProfile;
+document.getElementById('saveCycleBtn').onclick = saveCycle;
+document.getElementById('addFoodBtn').onclick = addFood;
+document.getElementById('saveCustomFoodBtn').onclick = saveCustomFood;
+document.getElementById('saveRecipeBtn').onclick = saveRecipe;
+document.getElementById('addWorkoutBtn').onclick = addWorkout;
+document.getElementById('addSleepBtn').onclick = addSleep;
+document.getElementById('addTrendBtn').onclick = addTrend;
+document.getElementById('startTimerBtn').onclick = startTimer;
+document.getElementById('loadDemoBtn').onclick = loadDemo;
+document.getElementById('exportBtn').onclick = exportData;
+document.getElementById('importBtn').onclick = () => document.getElementById('importFile').click();
+document.getElementById('importFile').addEventListener('change', e=>{ if(e.target.files[0]) importData(e.target.files[0]); });
+document.getElementById('foodSearch').addEventListener('input', renderFood);
+document.getElementById('foodCategory').addEventListener('change', renderFood);
+document.getElementById('recipeSearch').addEventListener('input', renderRecipeBuilder);
+document.getElementById('foodDate').addEventListener('change', renderFood);
+document.getElementById('workoutDate').addEventListener('change', renderWorkouts);
+document.getElementById('exerciseChartSelect').addEventListener('change', renderStrengthChart);
+
+renderAll();
+</script>
+</body>
+</html>
